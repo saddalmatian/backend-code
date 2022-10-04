@@ -1,0 +1,26 @@
+<annotation>
+	<folder>RAW</folder>
+	<filename>bottleopenerraw112.jpeg</filename>
+	<path>/home/gianghoatran/Code/AI/kitchen_dataset/BOTTLE_OPENER/RAW/bottleopenerraw112.jpeg</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>225</width>
+		<height>225</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>bottleopener</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>62</xmin>
+			<ymin>7</ymin>
+			<xmax>160</xmax>
+			<ymax>207</ymax>
+		</bndbox>
+	</object>
+</annotation>

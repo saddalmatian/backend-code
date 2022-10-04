@@ -1,0 +1,26 @@
+<annotation>
+	<folder>RAW</folder>
+	<filename>breadkniferaw22.jpg</filename>
+	<path>/home/gianghoatran/Code/AI/kitchen_dataset/BREAD_KNIFE/RAW/breadkniferaw22.jpg</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>350</width>
+		<height>235</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>bread_knife</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>6</xmin>
+			<ymin>7</ymin>
+			<xmax>344</xmax>
+			<ymax>212</ymax>
+		</bndbox>
+	</object>
+</annotation>
