@@ -1,7 +1,15 @@
-from fastapi import FastAPI, UploadFile
+from fastapi import FastAPI, UploadFile, File
+from fastapi.middleware.cors import CORSMiddleware
 import boto3
 
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 client = boto3.client('s3')
 
 
@@ -12,8 +20,8 @@ def health_check():
     }
 
 
-@app.post("/upload-image/")
-def upload_image(file: UploadFile):
+@app.post("/upload-img/")
+def upload_image(file: UploadFile = File(...)):
     return file
 
 

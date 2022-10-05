@@ -11,4 +11,5 @@ h5py==2.10.0
 imgaug
 IPython[all]
 opencv-python
-mrcnn
+fastapi
+uvicorn
