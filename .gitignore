@@ -137,7 +137,6 @@ venv.bak/
 
 # mkdocs documentation
 /site
-
 # mypy
 .mypy_cache/
 .dmypy.json
@@ -162,3 +161,4 @@ cython_debug/
 ./image_downloaded
 ./kitchen_dataset
 ./temp_dataset
+./Python-3.91
