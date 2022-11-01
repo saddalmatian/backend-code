@@ -139,10 +139,10 @@ class WolfeService():
         times: int = 1
     ) -> list:
         """
-        :param search_key: dog, cat, replace blank space with plus, ex: bread+knife
-        :param quantity: default is 32, min is 0, max is 64, per request
-        :param off_set: for pagination
-        :param times: for loop, if you use 1, it will retrieve one time
+        :params search_key: dog, cat, replace blank space with plus, ex: bread+knife
+        :params quantity: default is 32, min is 0, max is 64, per request
+        :params off_set: for pagination
+        :params times: for loop, if you use 1, it will retrieve one time
 
         Ex:
         To get all tongs images:
@@ -190,6 +190,30 @@ class WolfeService():
                     for chunk in r.iter_content(chunk_size=8192):
                         f.write(chunk)
 
+    def remove_none_object_file(
+        self,
+        raw_dir: str,
+        annot_dir: str
+    ):
+        """
+        :params raw_dir: The directory that you want to remove none object file
+        :params annot_dir: The directory of annotation (remove by annotation)
+        """
+        ori_raws = os.listdir(f'{raw_dir}/')
+        raw_images = list(
+            map(
+                lambda x: x.split('.')[0],
+                ori_raws
+            )
+        )
+        for image_name in os.listdir(f'{annot_dir}/'):
+            image_prefix = image_name.split('.')[0]
+            raw_images.pop(raw_images.index(image_prefix))
+        logging.info(f'Total images with none object: {len(raw_images)}')
+        for ori_raw in ori_raws:
+            if ori_raw.split('.')[0] in raw_images:
+                os.remove(f'{raw_dir}/{ori_raw}')
+
     def wolfe_flow(
         self,
         search_key: str,
@@ -201,13 +225,13 @@ class WolfeService():
         times: int = 1,
     ):
         """
-        :param search_key: dog, cat, replace blank space with plus, ex: bread+knife
+        :params search_key: dog, cat, replace blank space with plus, ex: bread+knife
         :params download_files_path: The directory you want to store your files
         :params processed_files_path: The destination directory contains all the images that renamed
         :params processed_files_name: Rename image with rename name, ex: if you set prefix=cat and rename batman.jpg, the file will be cat1.jpg
         :params start_idx: The number you want to set it in front of the file name
-        :param off_set: for pagination
-        :param times: for loop, if you use 1, it will retrieve one time
+        :params off_set: for pagination
+        :params times: for loop, if you use 1, it will retrieve one time
         """
         imgs = self.get_img_url_from_stock_adobe(
             'tongs',
@@ -226,12 +250,17 @@ class WolfeService():
 
 wolfe = WolfeService()
 
-wolfe.wolfe_flow(
-    search_key='tongs',
-    download_files_path='image_downloaded/unprocessed_imgs',
-    processed_files_path='image_downloaded/processed_imgs',
-    processed_files_name='tongsraw',
-    start_idx=339,
-    off_set=64,
-    times=10
-)
+# wolfe.wolfe_flow(
+#     search_key='tongs',
+#     download_files_path='image_downloaded/unprocessed_imgs',
+#     processed_files_path='image_downloaded/processed_imgs',
+#     processed_files_name='tongsraw',
+#     start_idx=339,
+#     off_set=64,
+#     times=10
+# )
+
+# wolfe.remove_none_object_file(
+#     raw_dir='kitchen_dataset/BREAD_KNIFE/RAW',
+#     annot_dir='kitchen_dataset/BREAD_KNIFE/ANNOTS'
+# )
