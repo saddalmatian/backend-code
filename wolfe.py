@@ -63,7 +63,7 @@ class WolfeService():
             start_idx=20
         )
         """
-        logging.info(f'Rename file names with name {renamed}...')
+        logging.info(f'Rename file names with name {rename}...')
         for image_name in tqdm(os.listdir(f'{dir_name}/')):
             file_extension = self.get_file_extension(image_name)
             if file_extension in ACCEPTABLE_EXTENSION:
@@ -234,7 +234,7 @@ class WolfeService():
         :params times: for loop, if you use 1, it will retrieve one time
         """
         imgs = self.get_img_url_from_stock_adobe(
-            'tongs',
+            search_key,
             off_set=off_set,
             times=times
         )
@@ -251,16 +251,16 @@ class WolfeService():
 wolfe = WolfeService()
 
 # wolfe.wolfe_flow(
-#     search_key='tongs',
+#     search_key='spatula',
 #     download_files_path='image_downloaded/unprocessed_imgs',
 #     processed_files_path='image_downloaded/processed_imgs',
-#     processed_files_name='tongsraw',
-#     start_idx=339,
-#     off_set=64,
+#     processed_files_name='spatularaw',
+#     start_idx=292,
+#     off_set=0,
 #     times=10
 # )
 
-# wolfe.remove_none_object_file(
-#     raw_dir='kitchen_dataset/BREAD_KNIFE/RAW',
-#     annot_dir='kitchen_dataset/BREAD_KNIFE/ANNOTS'
-# )
+wolfe.remove_none_object_file(
+    raw_dir='kitchen_dataset/SPATULA/RAW',
+    annot_dir='kitchen_dataset/SPATULA/ANNOTS'
+)

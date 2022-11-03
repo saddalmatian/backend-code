@@ -1,5 +1,6 @@
 from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
+from app.service.main import upload_file
 import boto3
 
 app = FastAPI()
@@ -22,14 +23,4 @@ def health_check():
 
 @app.post("/upload-img/")
 def upload_image(file: UploadFile = File(...)):
-    return file
-
-
-@app.get("/get-image")
-async def main():
-    # return "https://artifactphantomal.s3.ap-southeast-2.amazonaws.com/Screenshot+from+2022-09-19+14-42-03.png"
-    response = client.get_object(
-        Bucket='artifactphantomal',
-        Key='Screenshot from 2022-09-19 14-42-03.png',
-    )
-    print(response)
+    return upload_file(file)

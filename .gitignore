@@ -158,7 +158,8 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
-./image_downloaded
-./kitchen_dataset
-./temp_dataset
-./Python-3.9.1
+image_downloaded
+kitchen_dataset
+temp_dataset
+Python-3.9.1
+test_images
