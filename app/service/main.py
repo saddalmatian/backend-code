@@ -6,8 +6,16 @@ from yolov5 import detect
 
 
 def upload_file(file: UploadFile):
-    s3 = boto3.client('s3')
-    db = boto3.resource('dynamodb').Table('ai_table')
+    s3 = boto3.client(
+        's3',
+        aws_access_key_id='AKIAZA3XUK6XJGJPJJHE',
+        aws_secret_access_key='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',
+    )
+    db = boto3.resource(
+        'dynamodb',
+        aws_access_key_id='AKIAZA3XUK6XJGJPJJHE',
+        aws_secret_access_key='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',
+    ).Table('ai_table')
     bucket_name = 'kitchenaiproject'
     file_name = file.filename
     s3.put_object(
@@ -27,8 +35,9 @@ def upload_file(file: UploadFile):
         source=f'test_images/{file_name}',
         exist_ok=True
     )
+    print(model)
     s3.upload_file(
-        f'test_images/exp/{file_name}',
+        f'code/test_images/exp/{file_name}',
         bucket_name, f'exp/{file_name}'
     )
     expiration = 3600
