@@ -33,7 +33,7 @@ def upload_file(file: UploadFile):
     )
     print(model)
     s3.upload_file(
-        f'code/test_images/exp/{file_name}',
+        f'test_images/exp/{file_name}',
         bucket_name, f'exp/{file_name}'
     )
     expiration = 3600

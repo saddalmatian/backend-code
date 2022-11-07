@@ -1,3 +1,4 @@
+export AWS_PROFILE=admin
 aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin 620336797614.dkr.ecr.ap-southeast-2.amazonaws.com
 docker build -t ai .
 docker tag ai:latest 620336797614.dkr.ecr.ap-southeast-2.amazonaws.com/ai:latest
