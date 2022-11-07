@@ -3,18 +3,14 @@ from boto3.dynamodb.conditions import Key
 from fastapi import UploadFile
 import shutil
 from yolov5 import detect
-
+import os
 
 def upload_file(file: UploadFile):
     s3 = boto3.client(
         's3',
-        aws_access_key_id='AKIAZA3XUK6XJGJPJJHE',
-        aws_secret_access_key='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',
     )
     db = boto3.resource(
         'dynamodb',
-        aws_access_key_id='AKIAZA3XUK6XJGJPJJHE',
-        aws_secret_access_key='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',
     ).Table('ai_table')
     bucket_name = 'kitchenaiproject'
     file_name = file.filename
@@ -62,3 +58,8 @@ def upload_file(file: UploadFile):
     }
     shutil.rmtree('test_images/exp')
     return response
+
+
+
+def get_ls_dir():
+    return os.listdir()
