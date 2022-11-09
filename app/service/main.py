@@ -5,6 +5,7 @@ import shutil
 from yolov5 import detect
 import os
 
+
 def upload_file(file: UploadFile):
     s3 = boto3.client(
         's3',
@@ -31,7 +32,6 @@ def upload_file(file: UploadFile):
         source=f'test_images/{file_name}',
         exist_ok=True
     )
-    print(model)
     s3.upload_file(
         f'test_images/exp/{file_name}',
         bucket_name, f'exp/{file_name}'
@@ -60,6 +60,32 @@ def upload_file(file: UploadFile):
     return response
 
 
-
 def get_ls_dir():
     return os.listdir()
+
+
+def get_category():
+    db = boto3.resource(
+        'dynamodb',
+    ).Table('ai_table')
+    categories = db.query(
+        KeyConditionExpression=Key('PK').eq('KitchenGadgets')
+    )
+    items = categories.get('Items', [])
+    s3 = boto3.client(
+        's3',
+    )
+    bucket_name = 'kitchenaiproject'
+    expiration = 3600
+    for item in items:
+        s3_key = item.get('S3Key')
+        s3_link = s3.generate_presigned_url(
+            'get_object',
+            Params={
+                'Bucket': bucket_name,
+                'Key': s3_key
+            },
+            ExpiresIn=expiration
+        )
+        item.update({"MainImages": s3_link})
+    return items

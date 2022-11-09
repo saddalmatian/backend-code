@@ -1,17 +1,18 @@
 import os
 import shutil
-from asyncio.log import logger
 import json
 import requests
 from tqdm import tqdm
+from natsort import natsorted, ns
 import logging
 
 X_API_KEY = '8dac301ce010418ab1d90d3ad165463f'
 X_PRODUCT = 'my-app'
 ACCEPTABLE_EXTENSION = [
-    'jpeg',
-    'png',
-    'jpg',
+    'jpeg', 'JPEG',
+    'png', 'PNG',
+    'jpg', 'JPG',
+    # 'txt'
 ]
 logging.basicConfig(level=logging.INFO)
 
@@ -64,7 +65,10 @@ class WolfeService():
         )
         """
         logging.info(f'Rename file names with name {rename}...')
-        for image_name in tqdm(os.listdir(f'{dir_name}/')):
+        list_dir = os.listdir(f'{dir_name}/')
+        list_dir = natsorted(list_dir, key=lambda y: y.lower())
+        # sorted_listdir = tqdm(os.listdir(f'{dir_name}/').sort())
+        for image_name in list_dir:
             file_extension = self.get_file_extension(image_name)
             if file_extension in ACCEPTABLE_EXTENSION:
                 image_dir = f'{dir_name}/{image_name}'
@@ -74,24 +78,27 @@ class WolfeService():
                 os.rename(image_dir, renamed)
                 start_idx += 1
 
-    def move_xml(
+    def move_file(
         self,
         cur_dir: str,
         des_dir: str,
+        extension: list,
     ):
         """
-        :params cur_dir: Move all the xml files from current dir
-        :params des_dir: To des dire
+        :params cur_dir: Move all the files from current dir
+        :params des_dir: To des dir
+        :params extension: The list file extension
 
         Ex:
-        move_xml(
+        move_file(
             kitchen_dataset/BOTTLE_OPENER/RAW,
-            kitchen_dataset/BOTTLE_OPENER/ANNOTS
+            kitchen_dataset/BOTTLE_OPENER/ANNOTS,
+            ['txt','jpg']
         )
         """
         for image_name in os.listdir(f'{cur_dir}/'):
             file_extension = self.get_file_extension(image_name)
-            if file_extension == 'xml':
+            if file_extension in extension:
                 image_dir = f'{cur_dir}/{image_name}'
                 renamed = \
                     f'{des_dir}/{image_name}'
@@ -200,19 +207,38 @@ class WolfeService():
         :params annot_dir: The directory of annotation (remove by annotation)
         """
         ori_raws = os.listdir(f'{raw_dir}/')
+        annot_raws = os.listdir(f'{annot_dir}/')
         raw_images = list(
             map(
                 lambda x: x.split('.')[0],
                 ori_raws
             )
         )
+        annot_raws_images = list(
+            map(
+                lambda x: x.split('.')[0],
+                annot_raws
+            )
+        )
         for image_name in os.listdir(f'{annot_dir}/'):
             image_prefix = image_name.split('.')[0]
-            raw_images.pop(raw_images.index(image_prefix))
-        logging.info(f'Total images with none object: {len(raw_images)}')
+            if image_prefix in raw_images:
+                raw_images.pop(raw_images.index(image_prefix))
+            else:
+                annot_raws_images.pop(annot_raws_images.index(image_prefix))
+        logging.info(
+            f'Total images with none object: {len(raw_images)}'
+        )
+        logging.info(
+            f'Total labels with none object: {len(annot_raws_images)}'
+        )
+
         for ori_raw in ori_raws:
             if ori_raw.split('.')[0] in raw_images:
                 os.remove(f'{raw_dir}/{ori_raw}')
+        for annot_raw in annot_raws:
+            if annot_raw.split('.')[0] not in annot_raws_images:
+                os.remove(f'{annot_dir}/{annot_raw}')
 
     def wolfe_flow(
         self,
@@ -233,6 +259,8 @@ class WolfeService():
         :params off_set: for pagination
         :params times: for loop, if you use 1, it will retrieve one time
         """
+        search_key = search_key.strip()
+        search_key.replace(' ', '+')
         imgs = self.get_img_url_from_stock_adobe(
             search_key,
             off_set=off_set,
@@ -250,17 +278,23 @@ class WolfeService():
 
 wolfe = WolfeService()
 
+# wolfe.rename_image(
+#     'image_downloaded/processed_imgs',
+#     'breadkniferaw',
+#     'image_downloaded/jpg',
+#     1413
+# )
 # wolfe.wolfe_flow(
 #     search_key='spatula',
 #     download_files_path='image_downloaded/unprocessed_imgs',
 #     processed_files_path='image_downloaded/processed_imgs',
 #     processed_files_name='spatularaw',
-#     start_idx=292,
+#     start_idx=947,
 #     off_set=0,
 #     times=10
 # )
 
 wolfe.remove_none_object_file(
-    raw_dir='kitchen_dataset/SPATULA/RAW',
-    annot_dir='kitchen_dataset/SPATULA/ANNOTS'
+    raw_dir='images_spatula',
+    annot_dir='labels_spatula'
 )

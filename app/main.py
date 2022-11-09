@@ -1,6 +1,9 @@
 from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
-from app.service.main import upload_file, get_ls_dir
+from app.service.main import (
+    upload_file, get_ls_dir,
+    get_category
+)
 import boto3
 
 app = FastAPI()
@@ -24,6 +27,12 @@ def health_check():
 @app.post("/upload-img/")
 def upload_image(file: UploadFile = File(...)):
     return upload_file(file)
+
+
+@app.get("/categories/")
+def get_categories():
+    return get_category()
+
 
 @app.post("/get-ls/")
 def get_ls():

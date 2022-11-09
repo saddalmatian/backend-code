@@ -1,0 +1,5 @@
+bottle_opener
+bread_knife
+masher
+spatula
+tongs
