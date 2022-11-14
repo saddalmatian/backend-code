@@ -3,40 +3,50 @@
         "PK": "KitchenGadgets",
         "SK": "BottleOpener",
         "Description": "A device for removing the metal top from a bottle",
-        "MainImages": "",
-        "S3Key":"categories/bottle_opener.jpeg",
-        "SubImages": []
+        "S3Key": "categories/bottle_opener.jpeg",
+        "SubImages": [],
+        "ItemName": "Bottle Opener",
+        "ID": 1,
+        "Alias": "bottle_opener"
     },
     {
         "PK": "KitchenGadgets",
         "SK": "Spatula",
         "Description": "An implement with a broad, flat, blunt blade, used for mixing and spreading things, especially in cooking and painting.",
-        "MainImages": "",
-        "S3Key":"categories/spatula.jpeg",
-        "SubImages": []
+        "S3Key": "categories/spatula.jpeg",
+        "SubImages": [],
+        "ItemName": "Spatula",
+        "ID": 2,
+        "Alias": "spatula"
     },
     {
         "PK": "KitchenGadgets",
         "SK": "Masher",
         "Description": "A utensil for mashing food",
-        "MainImages": "",
-        "S3Key":"categories/masher.jpg",
-        "SubImages": []
+        "S3Key": "categories/masher.jpg",
+        "SubImages": [],
+        "ItemName": "Masher",
+        "ID": 3,
+        "Alias": "masher"
     },
     {
         "PK": "KitchenGadgets",
         "SK": "Tongs",
         "Description": "An instrument with two movable arms that are joined at one end, used for picking up and holding things",
-        "S3Key":"categories/tongs.png",
-        "MainImages": "",
-        "SubImages": []
+        "S3Key": "categories/tongs.png",
+        "SubImages": [],
+        "ItemName": "Tongs",
+        "ID": 4,
+        "Alias": "tongs"
     },
     {
         "PK": "KitchenGadgets",
         "SK": "BreadKnife",
         "Description": "A long knife with a serrated edge, for slicing bread.",
-        "MainImages": "",
-        "S3Key":"categories/bread_knife.jpg",
-        "SubImages": []
+        "S3Key": "categories/bread_knife.jpg",
+        "SubImages": [],
+        "ItemName": "Bread Knife",
+        "ID": 5,
+        "Alias": "bread_knife"
     }
 ]

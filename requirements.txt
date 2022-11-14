@@ -2,3 +2,4 @@ uvicorn
 fastapi
 aws
 boto3
+awscli

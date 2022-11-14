@@ -1,5 +1,5 @@
 import boto3
-from boto3.dynamodb.conditions import Key
+from boto3.dynamodb.conditions import Key, Attr
 from fastapi import UploadFile
 import shutil
 from yolov5 import detect
@@ -47,14 +47,36 @@ def upload_file(file: UploadFile):
     )
     results = []
     for item in model:
-        pk = sk = item
+        pk = 'KitchenGadgets'
         db_model = db.query(
-            KeyConditionExpression=Key('PK').eq(pk) & Key('SK').eq(sk)
+            KeyConditionExpression=Key('PK').eq(pk),
+            FilterExpression=Attr('Alias').eq(item)
+        ).get('Items', [])
+        if db_model:
+            extracted = db_model[0]
+        s3_key = extracted.get('S3Key')
+        standard_img = s3.generate_presigned_url(
+            'get_object',
+            Params={
+                'Bucket': bucket_name,
+                'Key': s3_key
+            },
+            ExpiresIn=expiration
         )
-        results.append(db_model)
+        extracted.update(
+            {
+                "MainImage": standard_img
+            }
+        )
+        extracted.pop("S3Key")
+        extracted.pop("SubImages")
+        extracted.pop("Alias")
+        extracted.pop("PK")
+        extracted.pop("SK")
+        results.append(extracted)
     response = {
         's3link': detected_img,
-        'results': model
+        'results': results
     }
     shutil.rmtree('test_images/exp')
     return response
