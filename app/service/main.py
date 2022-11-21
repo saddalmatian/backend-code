@@ -4,16 +4,20 @@ from fastapi import UploadFile
 import shutil
 from yolov5 import detect
 import os
+from ksuid import Ksuid
+import datetime
+s3 = boto3.client(
+    's3',
+)
+bucket_name = 'kitchenaiproject'
+expiration = 3600
+db = boto3.resource(
+    'dynamodb',
+).Table('ai_table')
 
 
 def upload_file(file: UploadFile):
-    s3 = boto3.client(
-        's3',
-    )
-    db = boto3.resource(
-        'dynamodb',
-    ).Table('ai_table')
-    bucket_name = 'kitchenaiproject'
+
     file_name = file.filename
     s3.put_object(
         Bucket=bucket_name,
@@ -36,7 +40,6 @@ def upload_file(file: UploadFile):
         f'test_images/exp/{file_name}',
         bucket_name, f'exp/{file_name}'
     )
-    expiration = 3600
     detected_img = s3.generate_presigned_url(
         'get_object',
         Params={
@@ -75,6 +78,7 @@ def upload_file(file: UploadFile):
         extracted.pop("SK")
         results.append(extracted)
     response = {
+        's3key_detected_img': f'exp/{file_name}',
         's3link': detected_img,
         'results': results
     }
@@ -111,3 +115,115 @@ def get_category():
         )
         item.update({"MainImages": s3_link})
     return items
+
+
+def do_report(
+    ori_image_s3_key: str,
+    s3key_detected_img: str,
+    message: str = '',
+    item_reported: str = ''
+):
+    sk = str(Ksuid(datetime=datetime.datetime.now()))
+    item_reporteds = [item_reported]
+    current_query = db.query(
+        KeyConditionExpression=Key('PK').eq('REPORTS'),
+        FilterExpression=Attr('OriImgKey').eq(ori_image_s3_key)
+    ).get('Items', [])
+    if current_query:
+        if item_reported in current_query[0].get('ItemsReported'):
+            current_query[0].get('ItemsReported').pop(
+                current_query[0].get('ItemsReported').index(item_reported))
+        item_reporteds.extend(current_query[0].get('ItemsReported'))
+        sk = current_query[0].get('SK')
+    items = {
+        "PK": "REPORTS",
+        "SK": sk,
+        "Message": message,
+        "CreatedAt": str(datetime.datetime.now()),
+        "OriImgKey": ori_image_s3_key,
+        "DetectedImgKey": s3key_detected_img,
+        'ItemsReported': item_reporteds
+    }
+
+    db.put_item(
+        Item=items
+    )
+    return "Successfully report to the Admin, we will re-train the model for more accuracy"
+
+
+def login(username: str, password: str):
+    db = boto3.resource(
+        'dynamodb',
+    ).Table('ai_table')
+    items = db.query(
+        KeyConditionExpression=Key('PK').eq(username) & Key('SK').eq(password)
+    ).get('Items', [])
+    if items:
+        return True
+    return False
+
+
+def get_reports_list():
+    reports = db.query(
+        KeyConditionExpression=Key('PK').eq('REPORTS')
+    ).get('Items', [])
+    for report in reports:
+        ori_key = report.get('OriImgKey', '')
+        if ori_key:
+            ori_img = s3.generate_presigned_url(
+                'get_object',
+                Params={
+                    'Bucket': bucket_name,
+                    'Key': f'exp/{ori_key}'
+                },
+                ExpiresIn=expiration
+            )
+        report.update({"OriImageSrc": ori_img})
+        report.pop('OriImgKey')
+        report.pop('PK')
+
+    return reports
+
+
+def get_specific_report(sk: str):
+    report = db.query(
+        KeyConditionExpression=Key('PK').eq('REPORTS') & Key('SK').eq(sk)
+    ).get('Items', [])
+    if report:
+        report = report[0]
+        ori_img_key = report.get('OriImgKey', '')
+        detected_img_key = report.get('DetectedImgKey', '')
+        ori_img = s3.generate_presigned_url(
+            'get_object',
+            Params={
+                'Bucket': bucket_name,
+                'Key': f'exp/{ori_img_key}'
+            },
+            ExpiresIn=expiration
+        )
+        deteced_img_src = s3.generate_presigned_url(
+            'get_object',
+            Params={
+                'Bucket': bucket_name,
+                'Key': f'exp/{detected_img_key}'
+            },
+            ExpiresIn=expiration
+        )
+        report.update(
+            {
+                "OriImg": ori_img,
+                "DetectedImg": deteced_img_src
+            }
+        )
+        item_reporteds = report.pop('ItemsReported', [])
+        return_items = []
+        for item in item_reporteds:
+            specific_item = db.query(
+                KeyConditionExpression=Key('PK').eq('KitchenGadgets'),
+                FilterExpression=Attr('Alias').eq(item)
+            ).get('Items', [])
+            if specific_item:
+                specific_item = specific_item[0]
+                return_items.append(specific_item)
+        report.update({'ItemsReporteds': return_items})
+    return report
