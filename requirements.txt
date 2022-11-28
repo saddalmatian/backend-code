@@ -3,4 +3,4 @@ fastapi
 aws
 boto3
 awscli
-ksuid
+svix-ksuid

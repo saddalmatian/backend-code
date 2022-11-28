@@ -197,7 +197,7 @@ def get_specific_report(sk: str):
             'get_object',
             Params={
                 'Bucket': bucket_name,
-                'Key': f'exp/{ori_img_key}'
+                'Key': f'{ori_img_key}'
             },
             ExpiresIn=expiration
         )
@@ -205,7 +205,7 @@ def get_specific_report(sk: str):
             'get_object',
             Params={
                 'Bucket': bucket_name,
-                'Key': f'exp/{detected_img_key}'
+                'Key': f'{detected_img_key}'
             },
             ExpiresIn=expiration
         )
