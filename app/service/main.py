@@ -223,7 +223,19 @@ def get_specific_report(sk: str):
                 FilterExpression=Attr('Alias').eq(item)
             ).get('Items', [])
             if specific_item:
+                sub_images=[]
                 specific_item = specific_item[0]
+                for sub_img in specific_item.get('SubImages',''):
+                    deteced_img_src = s3.generate_presigned_url(
+                        'get_object',
+                        Params={
+                            'Bucket': bucket_name,
+                            'Key': f'{sub_img}'
+                        },
+                        ExpiresIn=expiration
+                    )
+                    sub_images.append(deteced_img_src)
+                specific_item.update({'SubImages':sub_images})
                 return_items.append(specific_item)
         report.update({'ItemsReporteds': return_items})
     return report
