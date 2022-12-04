@@ -114,6 +114,19 @@ def get_category():
             ExpiresIn=expiration
         )
         item.update({"MainImages": s3_link})
+        sub_imgs = item.get('SubImages',[])
+        sub_imgs_ls = []
+        for sub_img in sub_imgs:
+            s3_link = s3.generate_presigned_url(
+                'get_object',
+                Params={
+                    'Bucket': bucket_name,
+                    'Key': sub_img
+                },
+                ExpiresIn=expiration
+            )
+            sub_imgs_ls.append(s3_link)
+        item.update({'SubImages':sub_imgs_ls})
     return items
 
 
